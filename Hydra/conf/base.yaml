@@ -1,0 +1,275 @@
+# Environment name
+NAME: ENV_name
+
+# Random seed
+SEED: 2020
+
+# Project Directory
+DIRECTORY:
+ROOT: /home/Alexandrite/khoa/Segmentation_RL/fix_point/RL_proofreading/
+LOG_dir: logs/
+TRAINED_MODEL_dir: trained_models/
+
+# All AGENT: MERGER, SPLITTER, LOCATOR
+MODULE:
+  TRAIN_load:
+  AGENT: SPLITTER
+  SPLITTER:
+      MID_STEP: False
+
+  MERGER:
+      MID_STEP: False
+
+  LOCATOR:
+      MERGE_error: True
+      SPLIT_error: True
+      LOCATE_ONLY: False
+
+      SPLITTER_load:
+      MERGER_load:
+
+# Merger Error
+MERGE:
+  # ERRORS: BREAK_BOUNDARY, DILATE, RE_ASSIGN
+  ERRORS: [BREAK_BOUNDARY, DILATE, RE_ASSIGN]
+  DILATE_size: [8, 8]
+  BREAK_BOUNDARY:
+      Percent: 0.5
+      nerr_max: 2
+      nerr_min: 0
+  DILATE:
+      Percent: 0.5
+      nerr_max: 3
+  RE_ASSIGN:
+      Percent: 0.5
+      nerr_max: 4
+
+# Split Error
+SPLIT:
+  ERRORS: SLIC
+  SLIC:
+      Percent: 1
+      nerr_min: 3
+      nerr_max: 6
+
+      max_iter: 10
+      compactness: 0.0001
+      sigma: 0.0001
+      slic_zero: True
+      enforce_connectivity: True
+      min_size_factor: 0.01
+
+# Dateset
+INPUT_DATA:
+  DATA: CREMI # CREMI, Zebrafish, SNEMI, ctDNA
+  Down_Scale: 2
+  MODE: TRAIN_NORMAL # TRAIN_DEBUG, TRAIN_SEMI_DEBUG, TRAIN_NORMAL, DEPLOY_VALID_SET, DEPLOY_TEST_SET, DEPLOY_SEG_result
+
+# Training
+TRAINING:
+  GPU_ID: [0, 1, 2, 3, 4, 5, 6, 7]
+  WORKER_num: 8
+
+# Validation
+VALID:
+  GPU_ID: [-1]
+
+# Save and log
+CHECKPOINT:
+  SAVE_max: True
+  LOG_period: 10
+  TRAIN_save_period: 100
+
+# Model
+MODEL:
+  LSTM_features: False
+  BACKBONE: CNN6
+  LAYER_features: [64, 128, 128, 256, 256, 512]
+  NORM_layer: IN
+  ACT_layer: ELU
+
+# Optimizer
+OPTIMIZER:
+  CLASS: Adam
+  LR: 1e-4
+  SHARED_OPTIMIZER: False
+
+  Adam:
+      amsgrad: True
+
+# RL agent
+AGENT:
+  CONTINUOUS: False
+  IMAGE_size: [96, 96]
+  LBL_ENCODE_BASE: 25
+  OBSERVATION_size: [96, 96]
+  MAX_step: 8
+  NUM_step: 8
+  ACTION_num: 101
+  KERNEL_size: 24
+  KERNEL_sigma: 3
+  ENTROPY_ALPHA: 0.05
+  GAMMA: 0.98
+  TAU: 1.0
+  REWARD:
+      IOU_good: 0.9
+      DISTANCE_min: 10
+      PENALTY_max: 0.5
+      PENALTY_medium: 0.3
+      PENALTY_min: 0.1
+
+# RL Module for Locator
+AGENT_MODULE:
+  CONTINUOUS: False
+  IMAGE_size: [96, 96]
+  OBSERVATION_size: [96, 96]
+  MAX_step: 8
+  NUM_step: 8
+  ACTION_num: 101
+  KERNEL_size: 24
+  KERNEL_sigma: 3
+  MODEL:
+      LSTM_features: False
+      BACKBONE: CNN6
+      LAYER_features: [64, 128, 128, 256, 256, 512]
+      NORM_layer: IN
+      ACT_layer: ELU
+
+
+# CREMI, Zebrafish, SNEMI, ctDNA
+DATASET:
+  CREMI:
+      train_path: "Data/CREMI/train/"
+      test_path: "Data/CREMI/test/"
+      data_channel: 1
+      dilation : 0
+      erosion : 1
+      relabel: True
+      TRAIN_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_SEMI_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_NORMAL:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_VALID_SET:
+          start: 192
+          end: 256
+          prob_map: False
+      DEPLOY_TEST_SET:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_SEG_result:
+          start: 0
+          end: 192
+          prob_map: True
+          edge_esp: 0.1
+          lbl_esp: 150
+
+  SNEMI:
+      train_path: "Data/SNEMI/train/"
+      test_path: "Data/SNEMI/test/"
+      data_channel: 1
+      dilation : 0
+      erosion : 1
+      relabel: True
+      TRAIN_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_SEMI_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_NORMAL:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_VALID_SET:
+          start: 192
+          end: 256
+          prob_map: False
+      DEPLOY_TEST_SET:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_SEG_result:
+          start: 0
+          end: 192
+          prob_map: True
+          edge_esp: 0.1
+          lbl_esp: 150
+
+  ctDNA:
+      train_path: "Data/ctDNA/train/"
+      test_path: "Data/ctDNA/test/"
+      data_channel: 1
+      dilation : 0
+      erosion : 1
+      relabel: True
+      TRAIN_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_SEMI_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_NORMAL:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_VALID_SET:
+          start: 192
+          end: 256
+          prob_map: False
+      DEPLOY_TEST_SET:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_SEG_result:
+          start: 0
+          end: 192
+          prob_map: True
+          edge_esp: 0.1
+          lbl_esp: 150
+
+  Zebrafish:
+      train_path: "Data/Zebrafish/train/"
+      test_path: "Data/Zebrafish/test/"
+      data_channel: 1
+      dilation : 0
+      erosion : 1
+      relabel: True
+      TRAIN_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_SEMI_DEBUG:
+          start: 250
+          end: 251
+          prob_map: False
+      TRAIN_NORMAL:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_VALID_SET:
+          start: 192
+          end: 256
+          prob_map: False
+      DEPLOY_TEST_SET:
+          start: 0
+          end: 192
+          prob_map: False
+      DEPLOY_SEG_result:
+          start: 0
+          end: 192
+          prob_map: True
+          edge_esp: 0.1
+          lbl_esp: 150

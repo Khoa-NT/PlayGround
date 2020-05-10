@@ -1,0 +1,16 @@
+dataset:
+  data_channel: 1
+  dilation: 0
+  erosion: 1
+  name: cremi
+  relabel: true
+  test_path: Data/CREMI/test/
+  train_path: Data/CREMI/train/
+db: mysql
+model:
+  class: conf.py_class_object.model.Merger
+  params:
+    channel: 3
+    layer: 4
+website:
+  domain: example.com

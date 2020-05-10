@@ -1,0 +1,12 @@
+defaults:
+  - dataset: cremi
+  - model: merger
+  - data_model: ${defaults.0.dataset}_${defaults.1.model}
+    optional: true
+  - hydra/output: custom
+
+# some other config options in your config file.
+website:
+  domain: example.com
+
+db: mysql

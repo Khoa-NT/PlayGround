@@ -1,0 +1,5 @@
+model:
+  class: conf.py_class_object.model.Merger
+  params:
+    layer: 4
+    channel: 3

@@ -1,0 +1,4 @@
+db:
+  driver: mysql
+  user: khoa_mysql
+  pass: secret_mysql

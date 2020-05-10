@@ -1,0 +1,9 @@
+dataset:
+  name: cremi
+  train_path: "Data/CREMI/train/"
+  test_path: "Data/CREMI/test/"
+  data_channel: 1
+  dilation : 0
+  erosion : 1
+  relabel: True
+
