@@ -1,0 +1,13 @@
+#
+# This file is overwrite the setting of the file in
+# https://github.com/facebookresearch/hydra/blob/master/hydra/conf/hydra/output/default.yaml
+#
+# Set the output logger to "experiments/deploy/{data}/{date_time}"
+
+hydra:
+  run:
+    dir: experiments/deploy/${dataset.name}/${now:%Y-%m-%d}/${exp_name}
+#    dir: experiments/deploy/${dataset.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: experiments/deploy/multirun/${dataset.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

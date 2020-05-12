@@ -1,0 +1,90 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - dataset: voc
+  - agent: locator
+  - hydra/output: train
+
+running_mode: train # test, fromSeg
+
+#exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
+exp_name: ${now:%H-%M-%S}_locator_${classes}
+
+gpu_ids: [1,2,3,4]
+valid_gpu_id: 6 #-1
+workers: 4
+
+seed: 2020
+
+# Define epoch period for tasks
+period:
+  log_img_train: 5
+  log_text_train: 50
+  log_text_val: 5
+  save_checkpoint: 10
+
+
+input_size: [336, 336]
+obs_size: [128, 128]
+
+ksize: [97, 97]
+nsig: 5
+#ksize: [60, 60]
+#nsig: 7
+
+use_classes: true
+classes: ["background", "person", "car"]
+
+
+model:
+  name: SimpleActorCritic
+  cls: graphs.models.simplenet.SimpleActorCritic
+  params:
+    model_name: CNN7
+    input_shape: ???
+    features: [64, 128, 256, 256, 256, 512, 512]
+    num_actions: ${agent.num_actions}
+
+init_model:
+  name: deeplabv3_resnet101
+
+loss:
+  name: CrossEntropy
+  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+  params:
+    config: null
+
+
+optimizer:
+  name: Adam # Adam ,RMSprop
+  learning_rate: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0.99
+  amsgrad: true
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+  save_max: false
+
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

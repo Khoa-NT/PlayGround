@@ -114,3 +114,5 @@ pretrained_weights/*
 # Data
 data/*
 !data/.keep
+segmentation_models_pytorch/experiments/*
+segmentation_models_pytorch/*.pth

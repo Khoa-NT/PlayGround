@@ -1,0 +1,7 @@
+loss:
+  name: wbce
+  class: graphs.losses.bce.WeightBinaryCrossEntropy
+  params:
+    n_channels: 2
+    n_classes: 1
+    bilinear: true

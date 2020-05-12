@@ -1,0 +1,35 @@
+#
+# This file is overwrite the setting of the file in
+# https://github.com/facebookresearch/hydra/blob/master/hydra/conf/hydra/job_logging/default.yaml
+#
+# Ref:  https://hydra.cc/docs/tutorial/logging/
+#       https://hydra.cc/docs/configure_hydra/logging
+# Don't use this file.
+# Set the logger level: INFO to DEBUG will cause the error.
+# Have to use hydra.verbose=true (https://hydra.cc/docs/tutorial/logging/)
+
+hydra:
+  # python logging configuration for tasks
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        # relative to the job log directory
+        filename: ${hydra.job.name}.log
+    root:
+      level: DEBUG
+      handlers: [console, file]
+
+    disable_existing_loggers: False
+
+
+

@@ -1,0 +1,47 @@
+dataset:
+  name: cremi
+  cls: datasets_loader.cremi.cremiDataLoader
+
+  data_channel: 1
+  num_classes: 1
+  lbl_encode_base: 25
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    raw_path: "data/CREMI/train/raw"
+    label_path: "data/CREMI/train/label"
+    shuffle_data_set: true
+    split_ratio: 0.8
+    batch_size_train: 4
+    batch_size_valid: 1
+
+    relabel: false
+    dilation: 0
+    erosion: 1
+
+  # running mode = "fromSeg"
+  fromSeg:
+    raw_path: "data/CREMI/train/raw"
+    label_path: "data/CREMI/train/label"
+    start_from: 100
+    batch_size: 1
+    lbl_encode_base: 25
+
+
+  # running mode = "deploy"
+  deploy:
+    raw_path: "data/CREMI/segmentation_result/raw"
+    label_path: "data/CREMI/segmentation_result/label"
+    start_from: 100
+    batch_size: 1
+    lbl_encode_base: 25
+
+
+
+
+
+
+
+
+

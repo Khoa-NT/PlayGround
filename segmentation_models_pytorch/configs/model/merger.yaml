@@ -1,0 +1,16 @@
+model:
+  name: merger
+  class: configs.py_class_object.model.Merger
+  params: ???
+#    cfg: ???
+#    cfg: ${website}
+
+
+#model:
+#  name: merger
+#  class: configs.py_class_object.model.Merger
+#  params:
+#    layer: 4
+#    channel: 3
+#    cfg: ???
+##    cfg: ${website}

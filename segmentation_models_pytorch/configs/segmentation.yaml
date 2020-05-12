@@ -1,0 +1,93 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - dataset: voc
+  - agent: unet
+  - hydra/output: train
+
+running_mode: train # test, fromSeg
+
+#exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
+#exp_name: ${now:%H-%M-%S}_cat_dog_bird
+#exp_name: ${now:%H-%M-%S}_car_person_chair
+#exp_name: ${now:%H-%M-%S}_person
+exp_name: ${now:%H-%M-%S}_cat
+
+#gpu_id: 4
+gpu_id: 6
+seed: 2020
+max_epoch: 1000
+
+# Define epoch period for tasks
+period:
+  log_img_train: 2
+  save_checkpoint: 50
+
+#input_size: [336, 336]
+input_size: [224, 224]
+
+ksize: [97, 97]
+nsig: 5
+
+use_classes: true
+classes: ['background', 'cat']
+
+model:
+  name: unet
+#  cls: segmentation_models_pytorch.unet.model.Unet
+  cls: segmentation_models_pytorch.Unet
+  params:
+    encoder_name: 'resnet34'
+    classes: 3
+    activation: 'softmax'
+
+model2:
+  name: deeplab
+  cls: torch.hub.load
+  params:
+    github: "pytorch/vision:v0.5.0"
+    model : "deeplabv3_resnet101"
+    pretrained: true
+
+#loss:
+#  name: CrossEntropy
+#  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+#  params:
+#    config: null
+
+loss:
+  name: BinaryCrossEntropy
+  cls: graphs.losses.bce.BinaryCrossEntropy
+  params:
+      config: null
+
+optimizer:
+  learning_rate: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0.99
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

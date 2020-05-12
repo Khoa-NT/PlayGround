@@ -1,0 +1,8 @@
+model:
+  name: unet
+  cls: graphs.models.unet.UNet
+  params:
+    n_channels: ${dataset.data_channel}
+    n_classes: ${dataset.num_classes}
+    bilinear: true
+    last_act: "sigmoid"
