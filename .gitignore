@@ -116,3 +116,4 @@ data/*
 !data/.keep
 segmentation_models_pytorch/experiments/*
 segmentation_models_pytorch/*.pth
+segmentation_models_pytorch/data/
