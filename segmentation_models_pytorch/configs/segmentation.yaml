@@ -10,6 +10,8 @@ defaults:
 
 running_mode: train # test, fromSeg
 
+
+
 #exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
 #exp_name: ${now:%H-%M-%S}_cat_dog_bird
 #exp_name: ${now:%H-%M-%S}_car_person_chair
@@ -41,7 +43,7 @@ model:
   cls: segmentation_models_pytorch.Unet
   params:
     encoder_name: 'resnet34'
-    classes: 3
+    classes: 2
     activation: 'softmax'
 
 model2:
@@ -59,8 +61,8 @@ model2:
 #    config: null
 
 loss:
-  name: BinaryCrossEntropy
-  cls: graphs.losses.bce.BinaryCrossEntropy
+  name: BCEWithLogitsLoss
+  cls: graphs.losses.bce.BCEWithLogitsLoss
   params:
       config: null
 
