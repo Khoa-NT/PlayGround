@@ -1,0 +1,4 @@
+db:
+  driver: post_mysql
+  user: post_khoa
+  pass: post_secret

@@ -1,0 +1,192 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - agent: SeedRecover
+  - hydra/output: train
+
+running_mode: train # train, test, fromSeg, test
+
+ps_name: ${running_mode}_${agent.name}
+
+exp_name: "\
+  ${agent.name}_${model.name}_${model.params.n_channels}_\
+  addErrLBL_${addErrLBL}${model.params.in_channels}_\
+  attMode_${model.params.att_mode}_\
+  size_${input_size}_\
+  lr_${optimizer.params.lr}_${scheduler.params.milestones}_\
+  batch_${dataset.train.batch_size_train}_\
+  breakBdrMax_${erroneous.breakBdr.max_nSeed}_rm_${erroneous.breakBdr.remove_max_nSeed}_\
+  "
+#exp_name: "\
+#  ${agent.name}_${model.name}_${model.params.n_channels}_\
+#  addErrLBL_${addErrLBL}${model.params.in_channels}_\
+#  size_${input_size}_\
+#  lr_${optimizer.params.lr}_${scheduler.params.milestones}_\
+#  batch_${dataset.train.batch_size_train}_\
+#  breakBdrMax_${erroneous.breakBdr.max_nSeed}_\
+#  makeBdrMax_${erroneous.makeBdr.max_nSeed}\
+#  "
+
+addErrLBL: toInput # toInput, toMask, false
+
+gpu_id: 2
+seed: 2020
+max_epoch: 2000
+
+# Define epoch period for tasks
+period:
+  log_img_train: 2
+  save_checkpoint: 100
+
+input_size: [160, 160]
+#input_size: [256, 256]
+
+ksize: [41, 41] # [31, 31]
+nmu: 0
+nsig: 1
+
+erroneous:
+  noisy_err_coor:
+    min_nSeed: 0
+    max_nSeed: 3
+  breakBdr:
+    ksize: [31, 31] # ${ksize}
+    ksize_ratio: [0.2, 1]
+    min_nSeed: 0
+    max_nSeed: 10 #6
+    remove_nerr: true
+    remove_min_nSeed: 0
+    remove_max_nSeed: 2
+#  makeBdr:
+#    ksize: ${ksize}
+#    ksize_ratio: [0.2, 1]
+#    min_nSeed: 0
+#    max_nSeed: 2
+#    remove_nerr: true
+#    remove_min_nSeed: 0
+#    remove_max_nSeed: 1
+#    mode: blank # "split" or "blank"
+
+output_channel: 1
+classes: ['background', 'cell'] #cremi
+
+
+#model:
+#  name: RecSeedNet_noConditional
+#  cls: graphs.models.RecSeed.RecSeedNet_noConditional
+#  params:
+#    in_channels: [3]
+#    out_channels: ${output_channel}
+#    n_channels: [64,128,256,512,1024]
+##    n_channels: [64,128,256,512]
+#    last_act: "sigmoid"
+#    bilinear: true
+
+model:
+  name: RecSeedNet
+  cls: graphs.models.RecSeed.RecSeedNet
+  params:
+    att_mode: g+x+c # g+x+c , g+c , (g+x)*c
+    in_channels: [2,1] # [ [EM + lbl] , seedmap]
+    out_channels: ${output_channel}
+    n_channels: [64,128,256,512,1024]
+    last_act: "sigmoid"
+    bilinear: true
+    act_layer: leaky_relu
+
+loss:
+  name: BCEWithLogitsLoss #MSELoss
+  cls: torch.nn.BCEWithLogitsLoss
+
+optimizer:
+  name: Adam # Adam, SGD
+  cls: torch.optim.Adam
+  params:
+    lr: 1e-3 #1e-2, 1e-3, 1e-4
+    betas: [0.9, 0.999]
+    eps: 1e-8
+    weight_decay: 0.99
+    amsgrad: false
+
+scheduler:
+  use: true
+  begin_step: 0
+  run_on_epoch: true
+  name: MultiStepLR
+  cls: torch.optim.lr_scheduler.MultiStepLR
+  params: # When resume the schedule, the midlestone is reset to 0
+#    milestones: [100,350,1500] #1e-4 #cremi size 160
+#    milestones: [11, 175] #1e-3 #cremi radomcrop size 160, #model double block relu [64,128,256,512,1024]
+#    milestones: [11,100,300,1100,1500] #1e-3 #cremi RandomSizedCrop size 160, #model double block relu [64,128,256,512,1024]
+#    milestones: [100,500] #1e-3 #cremi RandomSizedCrop size 160, #model double block relu [64,128,256,512,1024]
+    milestones: [] #1e-3 #cremi RandomSizedCrop size 160, #model double block relu [64,128,256,512,1024]
+    gamma: 0.1
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  '' #''
+  load_file: '' #'SeedRecAgent2.pt'
+
+  save_dir: './ckpt/'
+  save_with_name: ${agent.name}_${classes}
+  save_best: false
+
+
+dataset:
+  name: cremi
+  cls: datasets_loader.cremi.cremiDataLoader
+
+  data_channel: 1
+  num_classes: 2 # (cell & Background )
+
+  use_target_n_channels: False
+  use_ImgNet_nor: False
+
+  lbl_encode_base: 25
+  data_size: [1250, 1250]
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    raw_path: "data/CREMI/train/raw"
+    label_path: "data/CREMI/train/label"
+    test_raw_path: "data/CREMI/test/raw"
+
+    split_ratio: 0.8 # split train and val
+    shuffle_data_set: false #
+
+    batch_size_train: 16 # 16(160), 4
+    batch_size_valid: 16 # 16(160), 4
+
+    lbl2kchannel:
+      use: false
+      k_channel: 2
+      shuffle_Maxlbl: true
+
+    aug:
+      down_scale: 1
+      RandomSizedCrop:
+        use: false # true
+        min_height: 40 #64
+        max_height: 640 #64
+        train_size: ${input_size}
+
+    thres_remove_tiny: 20
+
+
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

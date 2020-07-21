@@ -1,0 +1,38 @@
+dataset:
+  name: dendrite
+  cls: datasets_loader.dendrite.DendriteDataLoader
+
+  data_channel: 1
+  num_classes: 4 # 'background', 'axon', 'dendrite', 'cell'
+
+  use_target_n_channels: False
+  use_ImgNet_nor: False
+
+  data_size: [1024, 1024]
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    path: "data/AIAR"
+
+    down_scale: -1
+    shuffle_train_set: true
+    shuffle_val_set: false
+
+    batch_size_train: 1
+    batch_size_valid: 1
+
+    relabel: false
+    dilation: 0
+    erosion: 1
+    thres_remove_tiny: 20
+
+
+
+
+
+
+
+
+
+

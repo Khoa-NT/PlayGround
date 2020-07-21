@@ -1,0 +1,102 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+defaults:
+  - tensorboard: train
+  - dataset: cremi
+  - agent: env_test
+  - hydra/output: train
+
+
+#  - model: unet
+#  - hydra/job_logging: train
+
+model:
+  name: unet
+  cls: graphs.models.unet.UNet
+  params:
+    n_channels: 3
+    n_classes: 1
+    bilinear: true
+    last_act: "sigmoid"
+
+running_mode: fromSeg # train, test, fromSeg
+
+#exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
+exp_name: ${now:%H-%M-%S}
+
+gpu_id: 7
+seed: 2020
+
+input_size: [336, 336]
+down_sample: 1
+
+aug: true
+ksize: [97, 97]
+nsig: 5
+
+# Define the model using for getting init segmentation
+init_model:
+  name: unet
+  cls: graphs.models.unet.UNet
+  params:
+    n_channels: 1
+    n_classes: 1
+    bilinear: true
+    last_act: "sigmoid"
+
+  load_dir:  '${prj_dir}/pretrained_weights'
+  load_file: 'seg_unet_cremi_300.pt'
+
+# Define the model using for fixing merge error
+err_model:
+  name: splitter
+  #  cls: graphs.models.simplenet.get_model
+  model_name: CNN
+  input_shape: [4, 96, 96]
+  features: [64, 128, 128, 256, 256, 512]
+  num_actions: 101
+
+  load_dir:  '${prj_dir}/pretrained_weights'
+  load_file: 'merge_fix.dat'
+
+  size: [96, 96]
+  observation_shape: [4, 96, 96]
+
+
+loss:
+  name: wbce
+  cls: graphs.losses.bce.PointWeightBinaryCrossEntropy
+  params:
+    weights: 2
+    thres_bases: 1
+
+optimizer:
+  learning_rate: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0.99
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  '${prj_dir}/pretrained_weights'
+  load_file: 'recover_unet_Att_cremi_1300.pt'
+
+
+  save_period: 10
+  save_dir: './ckpt/'
+  save_with_name: null
+
+
+
+test_yaml: null # Just a testing variable. Don't have to care about this
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

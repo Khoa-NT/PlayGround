@@ -86,7 +86,6 @@
 #     app.run_server(host='0.0.0.0', debug=True, port=8051)
 
 
-
 ### ----------------------------------- Create Table from Pandas Dash ----------------------------------- ###
 
 # import dash
@@ -226,6 +225,7 @@ def color_generator(N, shuffle_color_list=True):
 
     return lbl2rgb
 
+
 def checkInt2Tuple(input_num):
     if isinstance(input_num, int) or isinstance(input_num, float):
         output_tuple = (input_num, input_num)
@@ -235,11 +235,13 @@ def checkInt2Tuple(input_num):
         raise ValueError(f"Input {input_num} doesn't have correct shape (Hy,Wx)")
     return output_tuple
 
+
 def Pos2Coor(maxIndex, grid_size, grid_unit, k_size):
     list_coor = []
     for i in range(maxIndex):
         list_coor.append(Index2Coor(i, grid_size, grid_unit, k_size))
     return list_coor
+
 
 def Index2Coor(act, grid_shape, grid_unit, k_size):
     grid_shape = checkInt2Tuple(grid_shape)
@@ -250,6 +252,7 @@ def Index2Coor(act, grid_shape, grid_unit, k_size):
     # Col
     Wx = int((act % grid_shape[1]) * grid_unit[1] + k_size[1] / 2)
     return Hy, Wx
+
 
 # https://dash.plotly.com/dash-core-components
 
@@ -287,12 +290,12 @@ app.config.suppress_callback_exceptions = True
 def load_all_footage():
     print("load_all_footage")
 
+
 list_of_images = [
     'assets/horse.jpg',
     'assets/lbl.tif',
 ]
 lbl2rgb_f = color_generator(600, True)
-
 
 app.layout = html.Div([
     dcc.Tabs(id="tabs", value='tab-1', children=[
@@ -305,6 +308,7 @@ app.layout = html.Div([
     ]),
     html.Div(id='tabs-content')
 ])
+
 
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
@@ -435,14 +439,16 @@ def display_selected_data(selectedData):
     [Input('basic-interactions', 'relayoutData')])
 def display_relayout_data(relayoutData):
     return json.dumps(relayoutData, indent=2)
+
+
 # --------------- tab5 --------------- #
 tab5 = html.Div([
-    html.Div(className='row', children=[html.H1("Button")], style = {
-                     'width': '100%',
-                     'display': 'flex',
-                     'align-items': 'center',
-                     'justify-content': 'center',
-                 }),
+    html.Div(className='row', children=[html.H1("Button")], style={
+        'width': '100%',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+    }),
     html.Div(dcc.Input(id='input-box', type='text')),
     html.Button('Submit', id='button'),
     html.Div(id='output-container-button',
@@ -452,10 +458,17 @@ tab5 = html.Div([
     html.Button('Button 3', id='btn-nclicks-3', n_clicks=0),
     html.Div(id='container-button-timestamp'),
     html.Button('Changing Name Button', id='btn-nclicks-4', n_clicks=0),
+    dcc.Dropdown(
+        id='image-dropdown',
+        options=[{'label': i, 'value': i} for i in list_of_images],
+        # initially display the first entry in the list
+        value=list_of_images[0]
+    ),
 ])
 
+
 @app.callback(Output('btn-nclicks-4', 'children'),
-              [Input('btn-nclicks-4', 'n_clicks'),])
+              [Input('btn-nclicks-4', 'n_clicks'), ])
 def change_button_name(n_clicks):
     return f'clicked {n_clicks} time'
 
@@ -463,8 +476,10 @@ def change_button_name(n_clicks):
 @app.callback(Output('container-button-timestamp', 'children'),
               [Input('btn-nclicks-1', 'n_clicks'),
                Input('btn-nclicks-2', 'n_clicks'),
-               Input('btn-nclicks-3', 'n_clicks')])
-def displayClick(btn1, btn2, btn3):
+               Input('btn-nclicks-3', 'n_clicks'),
+               Input('image-dropdown', 'value'),
+               ])
+def displayClick(btn1, btn2, btn3, image_path):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'btn-nclicks-1' in changed_id:
         msg = 'Button 1 was most recently clicked'
@@ -472,9 +487,12 @@ def displayClick(btn1, btn2, btn3):
         msg = 'Button 2 was most recently clicked'
     elif 'btn-nclicks-3' in changed_id:
         msg = 'Button 3 was most recently clicked'
+    elif 'image-dropdown' in changed_id:
+        msg = image_path
     else:
         msg = 'None of the buttons have been clicked yet'
     return html.Div(msg)
+
 
 @app.callback(
     Output('output-container-button', 'children'),
@@ -485,6 +503,7 @@ def update_output(n_clicks, value):
         value,
         n_clicks
     )
+
 
 # --------------- tab4 --------------- #
 tab4 = html.Div([
@@ -560,7 +579,6 @@ def parse_files_contents(contents, filename, date):
 
     decoded = base64.b64decode(content_string)
 
-
     try:
         yaml = io.StringIO(decoded.decode('utf-8'))
         # yaml = io.BytesIO(decoded)
@@ -592,9 +610,9 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
             zip(list_of_contents, list_of_names, list_of_dates)]
         return children
 
+
 # --------------- tab3 --------------- #
 # https://dash.plotly.com/dash-core-components/upload
-
 tab3 = html.Div([
     html.H1("Upload Image"),
     dcc.Upload(
@@ -628,13 +646,31 @@ tab3 = html.Div([
         html.Img(id='image'),
     ]),
     html.Div([dcc.Graph(id="fig_img")]),
-    html.Pre(id='coor_text', style=tab6_styles['pre'])
+    html.Div([dcc.Graph(id="fig_img2")]),
+    html.Pre(id='coor_text', style=tab6_styles['pre']),
+    html.Pre(id='coor_text2', style=tab6_styles['pre']),
 
 ])
+
 
 @app.callback(
     Output('coor_text', 'children'),
     [Input('fig_img', 'clickData')])
+def display_click_data(clickData):
+    ctx = dash.callback_context
+    # print(clickData)
+    # return json.dumps(clickData, indent=2)
+    return json.dumps(
+        {
+            'states': ctx.states,
+            'triggered': ctx.triggered,
+            'inputs': ctx.inputs
+        }, indent=2)
+
+
+@app.callback(
+    Output('coor_text2', 'children'),
+    [Input('fig_img2', 'clickData')])
 def display_click_data(clickData):
     ctx = dash.callback_context
     # print(clickData)
@@ -662,6 +698,8 @@ def parse_imgs_contents(contents, filename, date):
             'wordBreak': 'break-all'
         })
     ])
+
+
 @app.callback(Output('output-image-upload', 'children'),
               [Input('upload-image', 'contents')],
               [State('upload-image', 'filename'),
@@ -675,7 +713,9 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 
 @app.callback([Output('image', 'src'),
-               Output('fig_img', 'figure'),],
+               Output('fig_img', 'figure'),
+               Output('fig_img2', 'figure'),
+               ],
               [Input('image-dropdown', 'value')])
 def update_image_src(image_path):
     img = np.array(Image.open(image_path), dtype="int32")
@@ -688,11 +728,12 @@ def update_image_src(image_path):
         img = lbl2rgb_f(img)
 
     img = Image.fromarray(img.astype("uint8"))
+    fig2 = px.imshow(img)
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            y = list_PosCoor[0],
-            x = list_PosCoor[1],
+            y=list_PosCoor[0],
+            x=list_PosCoor[1],
             # x=[0, img_width * scale_factor],
             # y=[0, img_height * scale_factor],
             mode="markers",
@@ -730,7 +771,6 @@ def update_image_src(image_path):
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
     )
 
-
     imgByteArr = io.BytesIO()
     img.save(imgByteArr, format='PNG')
     imgByteArr = imgByteArr.getvalue()
@@ -739,7 +779,9 @@ def update_image_src(image_path):
     print('current image_path = {}'.format(image_path))
     # encoded_image = base64.b64encode(open(image_path, 'rb').read())
     encoded_image = base64.b64encode(imgByteArr)
-    return 'data:image/png;base64,{}'.format(encoded_image.decode()), fig
+
+    return 'data:image/png;base64,{}'.format(encoded_image.decode()), fig, fig2
+
 
 # --------------- tab1 --------------- #
 tab1 = html.Div([
@@ -781,12 +823,15 @@ tab1 = html.Div([
     ])
 
 ])
+
+
 @app.callback(Output('call_fig', 'figure'),
-              [Input('btn-nclicks-5', 'n_clicks'),])
+              [Input('btn-nclicks-5', 'n_clicks'), ])
 def change_button_name(n_clicks):
     y = list_PosCoor[0]
     x = list_PosCoor[1]
     return px.scatter(x=x, y=y)
+
 
 # --------------- tab2 --------------- #
 # app.layout = html.Div([
@@ -803,7 +848,6 @@ tab2 = html.Div([
             value='MTL'
         ),
     ]),
-
 
     ## Dropdown
     html.Label('Dropdown'),
@@ -863,7 +907,6 @@ tab2 = html.Div([
         value=5,
     ),
 
-
     ## DatePickerSingle
     html.Label('DatePickerSingle'),
     dcc.DatePickerSingle(
@@ -872,8 +915,6 @@ tab2 = html.Div([
     ),
 
 ], style={'columnCount': 1})
-
-
 
 if __name__ == '__main__':
     size = [336, 336]
@@ -888,12 +929,11 @@ if __name__ == '__main__':
                  grid_size[1] / (grid_shape[1] - 1))
 
     list_coor = []
-    list_PosCoor = Pos2Coor(num_actions - 1,grid_shape, grid_unit, ksize)
+    list_PosCoor = Pos2Coor(num_actions - 1, grid_shape, grid_unit, ksize)
     for i in range(0, len(list_PosCoor), grid_shape[0]):
         list_coor = list_PosCoor[i:i + grid_shape[0]] + list_coor
     list_PosCoor = np.array(list_coor).T
     app.run_server(host='0.0.0.0', debug=True, port=8051)
-
 
 ### ----------------------------------- Basic Dash Callbacks: Dash App Layout ----------------------------------- ###
 
@@ -1084,7 +1124,6 @@ if __name__ == '__main__':
 #             hovermode='closest'
 #         )
 #     }
-
 
 
 # if __name__ == '__main__':

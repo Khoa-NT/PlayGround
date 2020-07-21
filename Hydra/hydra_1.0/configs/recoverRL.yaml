@@ -1,0 +1,244 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - hydra/output: train
+
+running_mode: train # train, test, fromSeg, test
+
+ps_name: ${running_mode}_${agent.name}
+
+exp_name: "\
+  ${agent.name}_${rl_model.name}_[mid_${agent.mid_step},done_${agent.done_step}]_${rl_model.params.features}_\
+  ${RecSeed_model.name}_${RecSeed_model.params.n_channels}_\
+  addErrLBL_${addErrLBL}_\
+  attMode_${RecSeed_model.params.att_mode}_\
+  size_${input_size}_\
+  lr_${optimizer.params.lr}_\
+  batch_${dataset.train.batch_size_train}_\
+  breakBdrMax_${erroneous.breakBdr.max_nSeed}_rm_${erroneous.breakBdr.remove_max_nSeed}_\
+  "
+
+addErrLBL: toInput # toInput, toMask, false
+
+gpu_ids: [1,2,3,4,5,6]
+valid_gpu_id: 7 #-1
+workers: 6
+
+seed: 2020
+
+# Define epoch period for tasks
+period:
+  log_img_train: 5
+  log_text_train: 50
+  log_text_val: 5
+  save_checkpoint: 500
+
+input_size: [160, 160]
+obs_size: [160, 160]
+
+ksize: [41, 41] # [31, 31]
+nmu: 0
+nsig: 1
+
+erroneous:
+  noisy_err_coor:
+    min_nSeed: 0
+    max_nSeed: 0
+  breakBdr:
+    ksize: 80
+    ksize_ratio: [0.2, 1]
+    min_nSeed: 0
+    max_nSeed: 10
+    remove_nerr: true
+    remove_min_nSeed: 0
+    remove_max_nSeed: 0
+#  makeBdr:
+#    ksize: ${ksize}
+#    ksize_ratio: [0.2, 1]
+#    min_nSeed: 0
+#    max_nSeed: 2
+#    remove_nerr: true
+#    remove_min_nSeed: 0
+#    remove_max_nSeed: 1
+#    mode: blank # "split" or "blank"
+
+output_channel: 1
+classes: ['background', 'cell'] #cremi
+
+
+agent:
+  name: SeedRecRLAgent
+  cls: agents.SeedRecover.SeedRecRLAgent
+
+  continuous: false
+  lstm_feats: 0
+  shared_optimizer: false
+
+  mid_step: true # true false
+  done_step: false # true false
+
+  obs:
+    len_observation_shape: 3 # seed, fix_lbl_k_channel
+    observation_shape: ???
+
+  tau: 1.0
+  entropy_alpha: 0.1 # explore or exploit 0.05
+  gamma: 0.98 # reward decay
+
+
+
+  max_step: 6
+  num_steps: 6
+  num_actions: 145 # 145
+
+  ksize: ${ksize} #[31, 31]
+  nmu: 0
+  nsig: 1
+  grid_pad: [0,0] # ${agent.ksize}
+
+  env:
+    name: SeedRecRL_env
+    cls: graphs.env.SeedRecRLEnv.SeedRecRL_env
+
+    score:
+      old_act:
+        use: false
+        reward: 0.0
+        penalty: 0.1
+
+      pick_correct:
+        use: true
+        reward: 1.0
+        penalty: 0.0
+
+      pick_percent: # Choose correct percent
+        use: true
+        thres: 0.2
+        reward: 0.5
+        penalty: 0.0
+
+      iou: # IoU improvement
+        use: true
+        thres: 0.2
+        reward: 0.5
+        penalty: 0.0
+
+    reward:
+      min: 0.1
+      medium: 0.5
+      max: 1.0
+
+    penalty:
+      min: 0.0
+      medium: 0.1
+      max: 0.3
+
+
+
+rl_model:
+  name: SimpleActorCritic
+  cls: graphs.models.simplenet.SimpleActorCritic
+  params:
+    model_name: CNN7
+    input_shape: ???
+    features: [128, 128, 256, 256, 256, 512, 512]
+    num_actions: ${agent.num_actions}
+
+
+RecSeed_model:
+  name: RecSeedNet
+  cls: graphs.models.RecSeed.RecSeedNet
+  params:
+    att_mode: g+x+c # g+x+c , g+c , (g+x)*c
+    in_channels: [2,1] # [EM, seedmap]
+    out_channels: ${output_channel}
+    n_channels: [64,128,256,512,1024]
+    last_act: "sigmoid"
+    bilinear: true
+    act_layer: leaky_relu
+
+
+optimizer:
+  name: Adam # Adam, SGD
+  cls: torch.optim.Adam
+  params:
+    lr: 1e-4 #1e-2, 1e-3, 1e-4
+    betas: [0.9, 0.999]
+    eps: 1e-8
+    weight_decay: 0.99
+    amsgrad: false
+
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+  save_best: false
+
+
+RecSeed_ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  '${prj_dir}/pretrained_weights'
+  load_file: 'SeedRecAgent3.pt'
+
+
+dataset:
+  name: cremi
+  cls: datasets_loader.cremi.cremiDataLoader
+
+  data_channel: 1
+  num_classes: 2 # (cell & Background )
+
+  use_target_n_channels: False
+  use_ImgNet_nor: False
+
+  lbl_encode_base: 25
+  data_size: [1250, 1250]
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    raw_path: "data/CREMI/train/raw"
+    label_path: "data/CREMI/train/label"
+    test_raw_path: "data/CREMI/test/raw"
+
+    split_ratio: 0.8 # split train and val
+    shuffle_data_set: false #
+
+    batch_size_train: 16 # 16(160), 4
+    batch_size_valid: 16 # 16(160), 4
+
+    lbl2kchannel:
+      use: false
+      k_channel: 2
+      shuffle_Maxlbl: true
+
+    aug:
+      down_scale: 1
+      RandomSizedCrop:
+        use: false # if false, use RandomCrop
+        min_height: 64
+        train_size: ${input_size}
+
+    thres_remove_tiny: 20
+
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

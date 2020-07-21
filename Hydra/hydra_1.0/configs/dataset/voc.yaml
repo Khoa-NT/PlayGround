@@ -1,0 +1,30 @@
+dataset:
+  name: voc
+  cls: datasets_loader.voc.vocDataLoader
+
+  data_channel: 3
+  num_classes: 21 # remove 'void'
+
+  use_target_n_channels: False
+  use_ImgNet_nor: true
+
+#  down_sample: 1
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    data_path: "/home/Alexandrite/khoa/dataset/VOC2012/VOCtrainval_11-May-2012/VOCdevkit/VOC2012/"
+    class_data_path: "ImageSets/Segmentation/Classes/" # From data_path
+
+    shuffle_train_set: true
+    shuffle_val_set: true
+    batch_size_train: 32
+    batch_size_valid: 32
+
+
+
+
+
+
+
+

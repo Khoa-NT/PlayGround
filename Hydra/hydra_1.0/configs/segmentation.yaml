@@ -1,0 +1,180 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+#  - dataset: cremi # cremi, voc
+  - agent: binseg # binseg, unet
+  - hydra/output: train
+
+running_mode: train # test, fromSeg
+
+ps_name: ${running_mode}_${agent.name}
+
+#exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
+#exp_name: ${agent.name}_${classes}_${input_size}_${optimizer.params.lr}_${scheduler.params.milestones} #voc
+
+exp_name: ${agent.name}_${dataset.name}_${input_size}_lr_${optimizer.params.lr}_LrSche_${scheduler.params.milestones}_batch_${dataset.train.batch_size_train}
+#exp_name: ${agent.name}_${dataset.name}_${input_size}_FGw_${loss.FGw}_BGw_${loss.BGw}_lr_${optimizer.params.lr}_LrSche$${scheduler.params.milestones}
+
+gpu_id: 1
+seed: 2020
+max_epoch: 1000
+
+# Define epoch period for tasks
+period:
+  log_img_train: 2
+  save_checkpoint: 50
+
+#input_size: [100, 100] # VOC, Cremi_small
+input_size: [160, 160] # CREMI seed recover
+#input_size: [512, 512] # CREMI
+
+use_classes: true
+output_channel: 1
+#classes: ['background', 'cat', 'dog', 'bird']
+#classes: ['background', 'car', 'person', 'chair']
+#classes: ['background', 'person'] #0
+#classes: ['background', 'dog'] #1
+#classes: ['background', 'car'] #3
+#classes: ['background', 'bird'] #4
+#classes: ['background', 'bottle'] #5
+#classes: ['background', 'aeroplane'] #6
+#classes: ['background', 'cat']
+
+classes: ['background', 'cell'] #cremi
+
+
+model:
+  name: unet
+  cls: graphs.models.unet.UNet
+  params:
+    n_channels: ${dataset.data_channel}
+    n_classes: ${output_channel}
+    bilinear: false
+    last_act: "sigmoid" # "sigmoid" "softmax"
+
+
+loss:
+  name: BCEWithLogitsLoss #MSELoss
+  cls: torch.nn.BCEWithLogitsLoss
+
+#loss:
+#  name: Point_WBCE
+#  cls: graphs.losses.bce.Point_WBCE
+#  params:
+#    output_size: ${input_size}
+#    use_att: false
+#  FGw: 0.5
+#  BGw: 0.5
+
+
+optimizer:
+  name: Adam # Adam, SGD
+  cls: torch.optim.Adam
+  params:
+    lr: 1e-4 # 1e-3, 1e-4, 1e-7
+    betas: [0.9, 0.999]
+    eps: 1e-8
+    weight_decay: 0.99
+    amsgrad: false
+
+
+scheduler:
+  use: true
+  begin_step: 0
+  run_on_epoch: true
+  name: MultiStepLR
+  cls: torch.optim.lr_scheduler.MultiStepLR
+  params:
+#    milestones: [5, 20, 80, 150, 180] #1e-3 #best
+#    milestones: [5, 20, 80, 300, 400, 500] #1e-3 #best
+#    milestones: [5, 20, 80, 600, 800, 850, 900, 950] #1e-3 #best
+
+#    milestones: [5, 20, 80] #1e-3
+#    milestones: [5, 20, 80, 2500] #1e-3
+#    milestones: [500] #1e-3
+
+    #cremi
+#    milestones: [2, 20, 80, 1500, 1800] #1e-3 #cremi
+    milestones: [10,300,600] #1e-3 #cremi size 130
+#    milestones: [2,60,200,300] #1e-3 #cremi size 512
+
+#    milestones: [2, 1300, 2200,3000] #size 100, begin from lr 1e-3
+#    milestones: [5] #size 160, begin from lr 1e-3
+#    milestones: []
+    gamma: 0.1
+
+#  use: true
+#  begin_step: 0
+#  run_on_epoch: false
+#  name: StepLR
+#  cls: torch.optim.lr_scheduler.StepLR
+#  params:
+#    step_size: 1
+#    gamma: 0.99
+
+dataset:
+  name: cremi
+  cls: datasets_loader.cremi.cremiDataLoader
+
+  data_channel: 1
+  num_classes: 2 # (cell & Background )
+
+  use_target_n_channels: False
+  use_ImgNet_nor: False
+
+  lbl_encode_base: 25
+  data_size: [1250, 1250]
+
+  # Below are hyperparameters depended on running mode
+  # running mode = "train"
+  train:
+    raw_path: "data/CREMI/train/raw"
+    label_path: "data/CREMI/train/label"
+    test_raw_path: "data/CREMI/test/raw"
+
+    down_scale: 1
+
+    split_ratio: 0.8
+
+    shuffle_data_set: true
+    batch_size_train: 8 # 64(size 130), 16(256)
+    batch_size_valid: 8 # 64(size 130), 16(256)
+
+    relabel: false
+    dilation: 0
+    erosion: 1
+    thres_remove_tiny: 20
+
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  '' #''
+#  load_file: 'cremi_binseg_100_step_1000.pt'
+#  load_file: 'cremi_binseg_100_step_5000.pt'
+  load_file: ''
+
+  save_dir: './ckpt/'
+#  save_with_name: null #'' or ${agent.name} #voc
+  save_with_name: ${agent.name}_${classes} #'' or ${agent.name} #voc
+#  save_with_name: ${agent.name} #'' or ${agent.name} #cremi
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+
+#2020-06-13/06-23-07_BinSegAgent_cremi_[100, 100]_lr_0.001_LrSche_[2]_batch_128
+#2020-06-14/18-01-44_BinSegAgent_cremi_[100, 100]_lr_0.0001_LrSche_[300, 1200, 2000]_batch_128
+#2020-06-15/02-51-00_BinSegAgent_cremi_[100, 100]_lr_1e-07_LrSche_[]_batch_128
+#2020-06-15/02-53-09_BinSegAgent_cremi_[100, 100]_lr_1e-08_LrSche_[]_batch_128
+#2020-06-15/03-26-35_BinSegAgent_cremi_[100, 100]_lr_1e-09_LrSche_[]_batch_128

@@ -1,0 +1,3 @@
+agent:
+  name: BinSegAgent
+  cls: agents.binseg.BinSegAgent

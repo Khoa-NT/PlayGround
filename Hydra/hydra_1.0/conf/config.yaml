@@ -1,0 +1,12 @@
+defaults:
+  - agent: SeedRecover
+  - hydra/output: train
+  - db: mysql
+  - db/mysql/storage_engine: innodb
+  - some_file
+
+dataset:
+  name: khoa
+
+exp_name: hydra
+

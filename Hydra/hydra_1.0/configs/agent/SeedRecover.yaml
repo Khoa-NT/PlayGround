@@ -1,0 +1,7 @@
+agent:
+  name: SeedRecAgent
+  cls: agents.SeedRecover.SeedRecAgent
+
+
+
+

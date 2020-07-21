@@ -1,0 +1,3 @@
+agent:
+  name: UNetAgent
+  cls: agents.unet.UNetAgent

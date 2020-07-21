@@ -1,0 +1,10 @@
+# @package _group_
+driver: post_mysql
+user: post_khoa
+pass: post_secret
+cls: main.PostgreSQLConnection
+params:
+  host: localhost
+  user: root
+  password: 1234
+  database: tutorial

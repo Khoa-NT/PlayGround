@@ -1,0 +1,98 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - dataset: dendrite # voc
+  - agent: locator
+  - hydra/output: train
+
+running_mode: train # test, fromSeg
+
+ps_name: ${running_mode}_${agent.name}
+exp_name: ${now:%H-%M-%S}_${agent.name}_[mid_${agent.mid_step},done_${agent.done_step}]_${dataset.name}_${input_size}_${classes}
+
+gpu_ids: [0,4,5]
+valid_gpu_id: 0 #-1
+workers: 6
+
+seed: 2020
+
+# Define epoch period for tasks
+period:
+  log_img_train: 5
+  log_text_train: 50
+  log_text_val: 5
+  save_checkpoint: 500
+
+
+#input_size: [336, 336]
+#obs_size: [128, 128]
+input_size: [512, 512]
+obs_size: [128, 128]
+
+ksize: [45, 45]
+nmu: 0
+nsig: 1
+#ksize: [60, 60]
+#nsig: 7
+
+use_classes: true
+output_channel: 1
+#classes: ["background", "person", "car", "dog", ]
+#classes: ["background", "cell"]
+#classes: ["background", "axon"]
+classes: ["background", "dendrite"]
+
+rl_model:
+  name: SimpleActorCritic
+  cls: graphs.models.simplenet.SimpleActorCritic
+  params:
+    model_name: CNN7
+    input_shape: ???
+    features: [64, 128, 128, 256, 256, 512, 512]
+    num_actions: ${agent.num_actions}
+
+
+loss:
+  name: CrossEntropy
+  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+  params:
+    config: null
+
+
+optimizer:
+  name: Adam # Adam, SGD
+  cls: torch.optim.Adam
+  params:
+    lr: 1e-4 # 1e-3, 1e-7
+    betas: [0.9, 0.999]
+    eps: 1e-8 # default: 1e-8
+    weight_decay: 0.99
+    amsgrad: false
+
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+  save_max: false
+
+
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

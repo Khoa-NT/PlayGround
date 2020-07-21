@@ -1,0 +1,7 @@
+# @package _group_
+name: sample_fucntion
+target: code.example_code.sample_fucntion
+params:
+  a: 1
+  b: 2
+  c: 3

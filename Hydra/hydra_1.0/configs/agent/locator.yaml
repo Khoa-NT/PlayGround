@@ -1,0 +1,54 @@
+agent:
+  name: Locator
+  cls: agents.locator.LocatorAgent
+
+  continuous: false
+  lstm_feats: 0
+  shared_optimizer: false
+
+  mid_step: true
+  done_step: false
+
+  obs:
+    len_observation_shape: 1 # seed
+    observation_shape: ???
+
+  tau: 1.0
+  entropy_alpha: 0.05 # explore or exploit
+  gamma: 0.98 # reward decay
+  pick_percent: 0.2 # Choose correct percent
+
+  max_step: 6
+  num_steps: 6
+  num_actions: 145
+
+  env:
+    name: Locator_env
+    cls: graphs.env.LocatorEnv.locator_env
+
+    del_lbl:
+      use: False
+      random_ratio: 0.5
+      pixel_thres: 20
+      n_chosen: 2
+
+    reward:
+      min: 0.1
+      medium: 0.5
+      max: 1.0
+      pick_correct: 1.0
+      pick_percent_correct: 0.5
+    penalty:
+      min: 0.0
+      medium: 0.1
+      max: 0.3
+      repick_old_act: 0.1
+      pick_wrong: 0.1
+      pick_percent_wrong: 0.1
+
+
+
+
+
+
+

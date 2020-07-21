@@ -1,0 +1,68 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - dataset: voc
+  - agent: env_test
+  - hydra/output: train
+
+
+#  - model: unet
+#  - hydra/job_logging: train
+
+running_mode: train # train, test, fromSeg
+
+#exp_name: ${dataset.name}_${gpu_id}_${now:%Y-%m-%d}_${now:%H-%M-%S}
+exp_name: ${now:%H-%M-%S}
+
+gpu_id: 5
+seed: 2020
+
+input_size: [336, 336]
+down_sample: 1
+
+ksize: [97, 97]
+nsig: 5
+
+use_classes: false
+classes: []
+
+
+loss:
+  name: wbce
+  cls: graphs.losses.bce.PointWeightBinaryCrossEntropy
+  params:
+    weights: 2
+    thres_bases: 1
+
+optimizer:
+  learning_rate: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0.99
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  '${prj_dir}/pretrained_weights'
+  load_file: 'recover_unet_Att_cremi_1300.pt'
+
+
+  save_period: 10
+  save_dir: './ckpt/'
+  save_with_name: null
+
+
+
+test_yaml: null # Just a testing variable. Don't have to care about this
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+

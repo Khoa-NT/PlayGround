@@ -1,0 +1,135 @@
+# ------------------------------------
+# Main configuration yaml for training
+# ------------------------------------
+
+defaults:
+  - tensorboard: train
+  - dataset: voc
+  - agent: segRL
+  - hydra/output: train
+
+running_mode: train # test, fromSeg
+
+ps_name: ${running_mode}_${agent.name}
+exp_name: ${now:%H-%M-%S}_${agent.name}_[mid_${agent.mid_step},done_${agent.done_step}]_${classes}
+
+#gpu_ids: [0,1,2,3,4,5,6,7]
+gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+#valid_gpu_id: 4 #-1
+#gpu_ids: [0]
+valid_gpu_id: 7 #-1
+workers: 6
+#workers: 8
+
+seed: 2020
+
+# Define epoch period for tasks
+period:
+  log_img_train: 5
+  log_text_train: 50
+  log_text_val: 20
+  save_checkpoint: 500
+
+#input_size: [336, 336]
+input_size: [500, 500]
+#input_size: [513, 513]
+obs_size: [128, 128]
+
+ksize: [101, 101]
+nsig: 13
+#ksize: [40, 40]
+#nsig: 5
+
+
+use_classes: true
+classes: ["background", "person"]
+output_channel: 1
+
+init_img: "init_model" # "init_model" or "seg_model"
+
+init_model:
+  name: deeplabv3_resnet101
+  cls: torch.hub.load
+  params:
+    github: "pytorch/vision:v0.5.0"
+    model: "deeplabv3_resnet101"
+    pretrained: true
+  is_load_ckpt: False
+  load_dir:  ''
+  load_file: ''
+
+
+rl_model:
+  name: SimpleActorCritic
+  cls: graphs.models.simplenet.SimpleActorCritic
+  params:
+    model_name: CNN7
+    input_shape: ???
+    features: [64, 128, 128, 256, 256, 512, 512]
+    num_actions: ${agent.num_actions}
+
+
+seg_model:
+  name: unet
+  cls: graphs.models.unet.UNet
+  params:
+#    n_channels: ${dataset.data_channel}
+    n_channels: 5
+    n_classes: ${output_channel}
+    bilinear: true
+    last_act: "sigmoid"
+
+
+seg_loss:
+  name: Point_WBCE
+  cls: graphs.losses.bce.Point_WBCE
+  params:
+    output_size: ${input_size}
+    use_att: false
+
+
+optimizer:
+  name: Adam # Adam ,RMSprop
+  learning_rate: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-3 # can be 1e-3, original 1e-8
+  weight_decay: 0.99
+  amsgrad: true
+
+seg_optimizer:
+  name: Adam # Adam ,RMSprop
+  learning_rate: 1e-6
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0.99
+  amsgrad: true
+
+ckpt:
+  load_dir_default:  '${prj_dir}/pretrained_weights'
+  load_file_default: 'load_sample.pt'
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+  save_max: false
+
+seg_ckpt:
+  load_dir:  ''
+  load_file: ''
+
+  save_dir: './ckpt/'
+  save_with_name: null
+  save_max: false
+
+
+test_yaml: null
+# --------------------
+# Assign later in code
+# --------------------
+curr_dir: ???
+prj_dir: ???
+
+
+
+
