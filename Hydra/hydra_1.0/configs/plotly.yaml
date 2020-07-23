@@ -133,7 +133,7 @@ dataset:
       RandomSizedCrop:
         use: false # true
         min_height: 64
-        train_size: ${input_size}
+        to_size: ${input_size}
 
     thres_remove_tiny: 20
 

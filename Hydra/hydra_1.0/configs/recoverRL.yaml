@@ -226,7 +226,7 @@ dataset:
       RandomSizedCrop:
         use: false # if false, use RandomCrop
         min_height: 64
-        train_size: ${input_size}
+        to_size: ${input_size}
 
     thres_remove_tiny: 20
 
