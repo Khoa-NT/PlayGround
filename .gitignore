@@ -121,3 +121,6 @@ Hydra/hydra_1.0/outputs/*
 Hydra/hydra_1.0/experiments/*
 Hydra/testing_error/outputs/*
 Hydra/testing_error/experiments/*
+
+spinningup/spinningup
+spinningup/spinningup/*

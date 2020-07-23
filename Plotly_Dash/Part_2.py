@@ -272,6 +272,7 @@ import pandas as pd
 import io
 import base64
 from PIL import Image
+import skimage.io as sk_io
 import numpy as np
 from omegaconf import OmegaConf
 
@@ -646,9 +647,15 @@ tab3 = html.Div([
         html.Img(id='image'),
     ]),
     html.Div([dcc.Graph(id="fig_img")]),
-    html.Div([dcc.Graph(id="fig_img2")]),
     html.Pre(id='coor_text', style=tab6_styles['pre']),
+    html.Div(className='row', children=[
+        html.Div(className='six columns', children=[dcc.Graph(id="fig_img2")],
+                 style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center', }),
+        html.Div(className='six columns', children=[dcc.Graph(id="fig_img3")],
+                 style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center', }),
+    ]),
     html.Pre(id='coor_text2', style=tab6_styles['pre']),
+    html.Pre(id='relayout-data-tab3', style=tab6_styles['pre']),
 
 ])
 
@@ -672,6 +679,11 @@ def display_click_data(clickData):
     Output('coor_text2', 'children'),
     [Input('fig_img2', 'clickData')])
 def display_click_data(clickData):
+    print("\n\nFROM display_click_data")
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    print("changed_id:", changed_id)
+    if "fig_img2" in changed_id:
+        print("fig_img2 in changed_id")
     ctx = dash.callback_context
     # print(clickData)
     # return json.dumps(clickData, indent=2)
@@ -681,6 +693,47 @@ def display_click_data(clickData):
             'triggered': ctx.triggered,
             'inputs': ctx.inputs
         }, indent=2)
+
+@app.callback(
+    [
+        Output('relayout-data-tab3', 'children'),
+        Output('fig_img3', 'figure'),
+     ],
+    [
+        Input('fig_img2', 'relayoutData')
+    ],
+    [
+        State('image-dropdown', 'value')
+    ]
+)
+def display_relayout_data3(relayoutData, image_path):
+    print("\n\nFROM display_relayout_data3")
+    img = sk_io.imread(image_path).astype("int32")
+    # img = np.array(Image.open(image_path), dtype="int32")
+    print("relayoutData:", relayoutData)
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    print("changed_id:", changed_id)
+    if relayoutData is not None:
+        if 'fig_img2.relayoutData' in changed_id:
+            print("fig_img2.relayoutData in changed_id")
+        if "autosize" in relayoutData:
+            print("autosize in relayoutData")
+        if "xaxis.autorange" in relayoutData:
+            print("xaxis.autorange in relayoutData")
+        if "xaxis.range[0]" in relayoutData:
+            x0 = int(relayoutData["xaxis.range[0]"])
+            y0 = int(relayoutData["yaxis.range[1]"])
+            x1 = int(relayoutData["xaxis.range[1]"])
+            y1 = int(relayoutData["yaxis.range[0]"])
+            img = img[y0:y1, x0:x1]
+
+
+    if '.tif' in image_path:
+        img = lbl2rgb_f(img)
+
+    img = Image.fromarray(img.astype("uint8"))
+    fig = px.imshow(img)
+    return json.dumps(relayoutData, indent=2), fig
 
 
 def parse_imgs_contents(contents, filename, date):
@@ -718,7 +771,8 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
                ],
               [Input('image-dropdown', 'value')])
 def update_image_src(image_path):
-    img = np.array(Image.open(image_path), dtype="int32")
+    # img = np.array(Image.open(image_path), dtype="int32")
+    img = sk_io.imread(image_path).astype("int32")
 
     # Create figure
     img_height, img_width = img.shape[0], img.shape[1]
