@@ -165,7 +165,7 @@ dataset:
     lbl2kchannel:
       use: false
       k_channel: 2
-      shuffle_Maxlbl: true
+    shuffle_Maxlbl: true
 
     aug:
       down_scale: 1
