@@ -1,6 +1,6 @@
 model:
   name: SimpleNet
-#  cls: graphs.models.simplenet.get_model
+#  target: graphs.models.simplenet.get_model
 #  params:
 #    n_channels: ${dataset.data_channel}
 #    n_classes: ${dataset.num_classes}

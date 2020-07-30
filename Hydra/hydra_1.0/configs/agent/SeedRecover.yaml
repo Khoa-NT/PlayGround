@@ -1,6 +1,6 @@
 agent:
   name: SeedRecAgent
-  cls: agents.SeedRecover.SeedRecAgent
+  target: agents.SeedRecover.SeedRecAgent
 
 
 

@@ -8,7 +8,7 @@ defaults:
 
 agent:
   name: MendBinSegAgent
-  cls: agents.MendBinSeg.MendBinSegAgent
+  target: agents.MendBinSeg.MendBinSegAgent
 
 running_mode: train # test, fromSeg
 
@@ -39,7 +39,7 @@ classes: ['background', 'cell'] #cremi
 
 model:
   name: MendSegNet
-  cls: graphs.models.RecSeed.MendSegNet
+  target: graphs.models.RecSeed.MendSegNet
   params:
     in_channels: [1,1]
     out_channels: ${output_channel}
@@ -50,12 +50,12 @@ model:
 
 loss:
   name: BCEWithLogitsLoss #MSELoss
-  cls: torch.nn.BCEWithLogitsLoss
+  target: torch.nn.BCEWithLogitsLoss
 
 
 optimizer:
   name: Adam # Adam, SGD
-  cls: torch.optim.Adam
+  target: torch.optim.Adam
   params:
     lr: 1e-4 # 1e-3, 1e-4, 1e-7
     betas: [0.9, 0.999]
@@ -69,7 +69,7 @@ scheduler:
   begin_step: 0
   run_on_epoch: true
   name: MultiStepLR
-  cls: torch.optim.lr_scheduler.MultiStepLR
+  target: torch.optim.lr_scheduler.MultiStepLR
   params:
     milestones: [20]
 #    milestones: []
@@ -78,7 +78,7 @@ scheduler:
 
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 2 # (cell & Background )

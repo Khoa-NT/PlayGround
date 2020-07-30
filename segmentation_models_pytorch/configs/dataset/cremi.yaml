@@ -1,6 +1,6 @@
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 1

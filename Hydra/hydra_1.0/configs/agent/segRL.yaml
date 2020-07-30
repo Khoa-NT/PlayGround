@@ -1,6 +1,6 @@
 agent:
   name: SegRL
-  cls: agents.segRL.SegRLAgent
+  target: agents.segRL.SegRLAgent
 
   continuous: false
   lstm_feats: 0
@@ -23,7 +23,7 @@ agent:
 
   env:
     name: SegRL_env
-    cls: graphs.env.SegRLEnv.segRL_env
+    target: graphs.env.SegRLEnv.segRL_env
 
     reward:
       min: 0.1

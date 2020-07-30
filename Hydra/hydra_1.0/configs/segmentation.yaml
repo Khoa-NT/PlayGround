@@ -48,7 +48,7 @@ classes: ['background', 'cell'] #cremi
 
 model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
     n_channels: ${dataset.data_channel}
     n_classes: ${output_channel}
@@ -58,11 +58,11 @@ model:
 
 loss:
   name: BCEWithLogitsLoss #MSELoss
-  cls: torch.nn.BCEWithLogitsLoss
+  target: torch.nn.BCEWithLogitsLoss
 
 #loss:
 #  name: Point_WBCE
-#  cls: graphs.losses.bce.Point_WBCE
+#  target: graphs.losses.bce.Point_WBCE
 #  params:
 #    output_size: ${input_size}
 #    use_att: false
@@ -72,7 +72,7 @@ loss:
 
 optimizer:
   name: Adam # Adam, SGD
-  cls: torch.optim.Adam
+  target: torch.optim.Adam
   params:
     lr: 1e-4 # 1e-3, 1e-4, 1e-7
     betas: [0.9, 0.999]
@@ -86,7 +86,7 @@ scheduler:
   begin_step: 0
   run_on_epoch: true
   name: MultiStepLR
-  cls: torch.optim.lr_scheduler.MultiStepLR
+  target: torch.optim.lr_scheduler.MultiStepLR
   params:
 #    milestones: [5, 20, 80, 150, 180] #1e-3 #best
 #    milestones: [5, 20, 80, 300, 400, 500] #1e-3 #best
@@ -110,14 +110,14 @@ scheduler:
 #  begin_step: 0
 #  run_on_epoch: false
 #  name: StepLR
-#  cls: torch.optim.lr_scheduler.StepLR
+#  target: torch.optim.lr_scheduler.StepLR
 #  params:
 #    step_size: 1
 #    gamma: 0.99
 
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 2 # (cell & Background )

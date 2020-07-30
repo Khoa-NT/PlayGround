@@ -60,7 +60,7 @@ classes: ['background', 'cell'] #cremi
 
 model:
   name: RecSeedNet
-  cls: graphs.models.RecSeed.RecSeedNet
+  target: graphs.models.RecSeed.RecSeedNet
   params:
     att_mode: g+x+c # g+x+c , g+c , (g+x)*c
     in_channels: [2,1] # [EM, seedmap]
@@ -72,7 +72,7 @@ model:
 
 seg_model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
     n_channels: ${dataset.data_channel}
     n_classes: ${output_channel}
@@ -82,7 +82,7 @@ seg_model:
 
 loss:
   name: BCEWithLogitsLoss #MSELoss
-  cls: torch.nn.BCEWithLogitsLoss
+  target: torch.nn.BCEWithLogitsLoss
 
 ckpt:
   load_dir_default:  '${prj_dir}/pretrained_weights'
@@ -99,7 +99,7 @@ ckpt:
 
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 2 # (cell & Background )

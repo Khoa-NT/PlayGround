@@ -41,7 +41,7 @@ classes: ["background", "person", "car"]
 
 model:
   name: SimpleActorCritic
-  cls: graphs.models.simplenet.SimpleActorCritic
+  target: graphs.models.simplenet.SimpleActorCritic
   params:
     model_name: CNN7
     input_shape: ???
@@ -53,7 +53,7 @@ init_model:
 
 loss:
   name: CrossEntropy
-  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+  target: graphs.losses.cross_entropy.CrossEntropyLoss
   params:
     config: null
 

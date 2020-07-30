@@ -47,7 +47,7 @@ classes: ["background", "dendrite"]
 
 rl_model:
   name: SimpleActorCritic
-  cls: graphs.models.simplenet.SimpleActorCritic
+  target: graphs.models.simplenet.SimpleActorCritic
   params:
     model_name: CNN7
     input_shape: ???
@@ -57,14 +57,14 @@ rl_model:
 
 loss:
   name: CrossEntropy
-  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+  target: graphs.losses.cross_entropy.CrossEntropyLoss
   params:
     config: null
 
 
 optimizer:
   name: Adam # Adam, SGD
-  cls: torch.optim.Adam
+  target: torch.optim.Adam
   params:
     lr: 1e-4 # 1e-3, 1e-7
     betas: [0.9, 0.999]

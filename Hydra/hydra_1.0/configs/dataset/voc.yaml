@@ -1,6 +1,6 @@
 dataset:
   name: voc
-  cls: datasets_loader.voc.vocDataLoader
+  target: datasets_loader.voc.vocDataLoader
 
   data_channel: 3
   num_classes: 21 # remove 'void'

@@ -1,6 +1,6 @@
 model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
     n_channels: ${dataset.data_channel}
     n_classes: ${output_channel}

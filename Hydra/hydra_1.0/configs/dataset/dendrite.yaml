@@ -1,6 +1,6 @@
 dataset:
   name: dendrite
-  cls: datasets_loader.dendrite.DendriteDataLoader
+  target: datasets_loader.dendrite.DendriteDataLoader
 
   data_channel: 1
   num_classes: 4 # 'background', 'axon', 'dendrite', 'cell'

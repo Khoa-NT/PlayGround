@@ -49,7 +49,7 @@ init_img: "init_model" # "init_model" or "seg_model"
 
 init_model:
   name: deeplabv3_resnet101
-  cls: torch.hub.load
+  target: torch.hub.load
   params:
     github: "pytorch/vision:v0.5.0"
     model: "deeplabv3_resnet101"
@@ -61,7 +61,7 @@ init_model:
 
 rl_model:
   name: SimpleActorCritic
-  cls: graphs.models.simplenet.SimpleActorCritic
+  target: graphs.models.simplenet.SimpleActorCritic
   params:
     model_name: CNN7
     input_shape: ???
@@ -71,7 +71,7 @@ rl_model:
 
 seg_model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
 #    n_channels: ${dataset.data_channel}
     n_channels: 5
@@ -82,7 +82,7 @@ seg_model:
 
 seg_loss:
   name: Point_WBCE
-  cls: graphs.losses.bce.Point_WBCE
+  target: graphs.losses.bce.Point_WBCE
   params:
     output_size: ${input_size}
     use_att: false

@@ -2,7 +2,7 @@
 driver: post_mysql
 user: post_khoa
 pass: post_secret
-cls: main.PostgreSQLConnection
+target: main.PostgreSQLConnection
 params:
   host: localhost
   user: root

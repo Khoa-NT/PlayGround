@@ -13,7 +13,7 @@ defaults:
 
 model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
     n_channels: 3
     n_classes: 1
@@ -38,7 +38,7 @@ nsig: 5
 # Define the model using for getting init segmentation
 init_model:
   name: unet
-  cls: graphs.models.unet.UNet
+  target: graphs.models.unet.UNet
   params:
     n_channels: 1
     n_classes: 1
@@ -51,7 +51,7 @@ init_model:
 # Define the model using for fixing merge error
 err_model:
   name: splitter
-  #  cls: graphs.models.simplenet.get_model
+  #  target: graphs.models.simplenet.get_model
   model_name: CNN
   input_shape: [4, 96, 96]
   features: [64, 128, 128, 256, 256, 512]
@@ -66,7 +66,7 @@ err_model:
 
 loss:
   name: wbce
-  cls: graphs.losses.bce.PointWeightBinaryCrossEntropy
+  target: graphs.losses.bce.PointWeightBinaryCrossEntropy
   params:
     weights: 2
     thres_bases: 1

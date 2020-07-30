@@ -1,6 +1,6 @@
 agent:
   name: EnvTest
-  cls: agents.interactive_env.EnvTest
+  target: agents.interactive_env.EnvTest
   mid_step: true
   done_step: false
   len_observation_shape: 3

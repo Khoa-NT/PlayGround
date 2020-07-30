@@ -32,7 +32,7 @@ classes: []
 
 loss:
   name: wbce
-  cls: graphs.losses.bce.PointWeightBinaryCrossEntropy
+  target: graphs.losses.bce.PointWeightBinaryCrossEntropy
   params:
     weights: 2
     thres_bases: 1

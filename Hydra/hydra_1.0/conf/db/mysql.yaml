@@ -2,7 +2,7 @@
 driver: mysql
 user: khoa_mysql
 pass: secret_mysql
-cls: main.MySQLConnection
+target: main.MySQLConnection
 params:
   host: localhost
   user: root

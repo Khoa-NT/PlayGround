@@ -1,6 +1,6 @@
 model:
   name: fusionnet
-  cls: graphs.models.fusionNet.FusionNet
+  target: graphs.models.fusionNet.FusionNet
   params:
     in_ch: ${dataset.data_channel}
     features: [64, 128, 256, 512]

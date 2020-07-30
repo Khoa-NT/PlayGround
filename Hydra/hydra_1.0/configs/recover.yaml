@@ -76,7 +76,7 @@ classes: ['background', 'cell'] #cremi
 
 #model:
 #  name: RecSeedNet_noConditional
-#  cls: graphs.models.RecSeed.RecSeedNet_noConditional
+#  target: graphs.models.RecSeed.RecSeedNet_noConditional
 #  params:
 #    in_channels: [3]
 #    out_channels: ${output_channel}
@@ -87,7 +87,7 @@ classes: ['background', 'cell'] #cremi
 
 model:
   name: RecSeedNet
-  cls: graphs.models.RecSeed.RecSeedNet
+  target: graphs.models.RecSeed.RecSeedNet
   params:
     att_mode: g+x+c # g+x+c , g+c , (g+x)*c
     in_channels: [2,1] # [ [EM + lbl] , seedmap]
@@ -99,11 +99,11 @@ model:
 
 loss:
   name: BCEWithLogitsLoss #MSELoss
-  cls: torch.nn.BCEWithLogitsLoss
+  target: torch.nn.BCEWithLogitsLoss
 
 optimizer:
   name: Adam # Adam, SGD
-  cls: torch.optim.Adam
+  target: torch.optim.Adam
   params:
     lr: 1e-3 #1e-2, 1e-3, 1e-4
     betas: [0.9, 0.999]
@@ -116,7 +116,7 @@ scheduler:
   begin_step: 0
   run_on_epoch: true
   name: MultiStepLR
-  cls: torch.optim.lr_scheduler.MultiStepLR
+  target: torch.optim.lr_scheduler.MultiStepLR
   params: # When resume the schedule, the midlestone is reset to 0
 #    milestones: [100,350,1500] #1e-4 #cremi size 160
 #    milestones: [11, 175] #1e-3 #cremi radomcrop size 160, #model double block relu [64,128,256,512,1024]
@@ -138,7 +138,7 @@ ckpt:
 
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 2 # (cell & Background )

@@ -71,7 +71,7 @@ classes: ['background', 'cell'] #cremi
 
 agent:
   name: SeedRecRLAgent
-  cls: agents.SeedRecover.SeedRecRLAgent
+  target: agents.SeedRecover.SeedRecRLAgent
 
   continuous: false
   lstm_feats: 0
@@ -101,7 +101,7 @@ agent:
 
   env:
     name: SeedRecRL_env
-    cls: graphs.env.SeedRecRLEnv.SeedRecRL_env
+    target: graphs.env.SeedRecRLEnv.SeedRecRL_env
 
     score:
       old_act:
@@ -140,7 +140,7 @@ agent:
 
 rl_model:
   name: SimpleActorCritic
-  cls: graphs.models.simplenet.SimpleActorCritic
+  target: graphs.models.simplenet.SimpleActorCritic
   params:
     model_name: CNN7
     input_shape: ???
@@ -150,7 +150,7 @@ rl_model:
 
 RecSeed_model:
   name: RecSeedNet
-  cls: graphs.models.RecSeed.RecSeedNet
+  target: graphs.models.RecSeed.RecSeedNet
   params:
     att_mode: g+x+c # g+x+c , g+c , (g+x)*c
     in_channels: [2,1] # [EM, seedmap]
@@ -163,7 +163,7 @@ RecSeed_model:
 
 optimizer:
   name: Adam # Adam, SGD
-  cls: torch.optim.Adam
+  target: torch.optim.Adam
   params:
     lr: 1e-4 #1e-2, 1e-3, 1e-4
     betas: [0.9, 0.999]
@@ -192,7 +192,7 @@ RecSeed_ckpt:
 
 dataset:
   name: cremi
-  cls: datasets_loader.cremi.cremiDataLoader
+  target: datasets_loader.cremi.cremiDataLoader
 
   data_channel: 1
   num_classes: 2 # (cell & Background )

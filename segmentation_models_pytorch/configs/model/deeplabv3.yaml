@@ -1,6 +1,6 @@
 model:
   name: deeplabv3
-#  cls: graphs.models.unet.UNet
+#  target: graphs.models.unet.UNet
 #  params:
 #    n_channels: 2
 #    n_classes: 1

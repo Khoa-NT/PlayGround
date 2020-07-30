@@ -1,6 +1,6 @@
 agent:
   name: Locator
-  cls: agents.locator.LocatorAgent
+  target: agents.locator.LocatorAgent
 
   continuous: false
   lstm_feats: 0
@@ -25,7 +25,7 @@ agent:
 
   env:
     name: Locator_env
-    cls: graphs.env.LocatorEnv.locator_env
+    target: graphs.env.LocatorEnv.locator_env
     reward:
       min: 0.1
       medium: 0.5

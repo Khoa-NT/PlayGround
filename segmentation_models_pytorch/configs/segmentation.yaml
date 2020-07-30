@@ -39,8 +39,8 @@ classes: ['background', 'cat']
 
 model:
   name: unet
-#  cls: segmentation_models_pytorch.unet.model.Unet
-  cls: segmentation_models_pytorch.Unet
+#  target: segmentation_models_pytorch.unet.model.Unet
+  target: segmentation_models_pytorch.Unet
   params:
     encoder_name: 'resnet34'
     classes: 2
@@ -48,7 +48,7 @@ model:
 
 model2:
   name: deeplab
-  cls: torch.hub.load
+  target: torch.hub.load
   params:
     github: "pytorch/vision:v0.5.0"
     model : "deeplabv3_resnet101"
@@ -56,13 +56,13 @@ model2:
 
 #loss:
 #  name: CrossEntropy
-#  cls: graphs.losses.cross_entropy.CrossEntropyLoss
+#  target: graphs.losses.cross_entropy.CrossEntropyLoss
 #  params:
 #    config: null
 
 loss:
   name: BCEWithLogitsLoss
-  cls: graphs.losses.bce.BCEWithLogitsLoss
+  target: graphs.losses.bce.BCEWithLogitsLoss
   params:
       config: null
 
