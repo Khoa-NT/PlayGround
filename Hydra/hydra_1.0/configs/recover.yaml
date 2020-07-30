@@ -165,7 +165,7 @@ dataset:
     lbl2kchannel:
       use: false
       k_channel: 2
-      shuffle_Maxlbl: true
+    shuffle_Maxlbl: true
 
     aug:
       down_scale: 1
@@ -173,7 +173,7 @@ dataset:
         use: false # true
         min_height: 40 #64
         max_height: 640 #64
-        train_size: ${input_size}
+        to_size: ${input_size}
 
     thres_remove_tiny: 20
 
