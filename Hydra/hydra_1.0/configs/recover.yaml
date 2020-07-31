@@ -167,7 +167,7 @@ dataset:
       k_channel: 2
     shuffle_Maxlbl: true
 
-    aug:
+    pre_aug:
       down_scale: 1
       RandomSizedCrop:
         use: false # true
